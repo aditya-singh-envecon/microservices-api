@@ -65,7 +65,8 @@ def test_create_import_booking_and_save_details_success(base_url, headers):
         context=context
     )
 
-    details_response = post(import_booking_details_url, headers, details_payload)
+    details_response = post(import_booking_details_url,
+                            headers, details_payload)
     assert details_response.status_code == 200
 
     details_json = details_response.json()
@@ -83,6 +84,9 @@ def test_create_import_booking_and_save_details_success(base_url, headers):
         "bkid": bkid,
         "context": context
     }
+
+    pytest.import_context["bk_unique_no"] = details_data["UniqueNo"]
+    pytest.import_context["bl_number"] = details_data["BLNumber"]
 
     print("\n✅ Import Booking is created and details added successfully.")
 
@@ -145,10 +149,9 @@ def test_add_import_booking_cargo_success(base_url, headers):
     assert cargo_data["BkID"] == bkid
 
     pytest.import_context["cargo_id"] = cargo_data["ID"]
-    pytest.import_context["cargo_unique_no"] = cargo_data["UniqueNo"] 
+    pytest.import_context["cargo_unique_no"] = cargo_data["UniqueNo"]
 
     print("\n✅ Import Booking Cargo added successfully.")
-
 
 
 def test_add_import_booking_container_success(base_url, headers):
@@ -186,9 +189,6 @@ def test_add_import_booking_container_success(base_url, headers):
     print("\n✅ Import Booking Container added successfully.")
 
 
-
-
-
 def test_map_import_cargo_container_success(base_url, headers):
     """
     Test Scenario:
@@ -243,8 +243,6 @@ def test_map_import_cargo_container_success(base_url, headers):
     print("\n✅ Import Cargo mapped with Container successfully.")
 
 
-
-
 def test_map_import_cargo_container_success(base_url, headers):
     """
     Test Scenario:
@@ -297,8 +295,6 @@ def test_map_import_cargo_container_success(base_url, headers):
     assert map_json["Data"]["ID"] == cargo_id
 
     print("\n✅ Import Cargo mapped with Container successfully.")
-
-
 
 
 def test_update_import_booking_boe_success(base_url, headers):
@@ -307,17 +303,39 @@ def test_update_import_booking_boe_success(base_url, headers):
     cargo_id = pytest.import_context["cargo_id"]
     cargo_unique_no = pytest.import_context["cargo_unique_no"]
     line_no = pytest.import_context["context"]["line_no"]
-
+    bk_unique_no = pytest.import_context["bk_unique_no"]
     boe_url = f"{base_url}/csm/v1/MCNCImportBooking/SaveBoE"
 
     payload = get_import_booking_boe_payload(
         bkid=bkid,
         cargo_id=cargo_id,
         cargo_unique_no=cargo_unique_no,
+        bk_unique_no=bk_unique_no,
         line_no=line_no
     )
 
     response = post(boe_url, headers, payload)
+
+    response = post(boe_url, headers, payload)
+
+    print("\n📤 BOE REQUEST PAYLOAD:")
+    print(json.dumps(payload, indent=4))
+
+    print("\n📥 BOE RESPONSE STATUS:", response.status_code)
+
+    try:
+        response_json = response.json()
+        print("\n📥 BOE RESPONSE BODY:")
+        print(json.dumps(response_json, indent=4))
+    except Exception:
+        print("\n📥 BOE RESPONSE TEXT:")
+        print(response.text)
+
+    assert response.status_code == 200, (
+        f"BOE failed with status {response.status_code}. "
+        f"Response: {response.text}"
+    )
+
     assert response.status_code == 200
 
     response_json = response.json()
@@ -336,7 +354,6 @@ def test_update_import_booking_boe_success(base_url, headers):
 # Optional sanity checks
     assert boe_data["ID"] == cargo_id
     assert boe_data["BkID"] == bkid
-
 
 
 def test_update_import_booking_ooc_success(base_url, headers):
@@ -434,6 +451,4 @@ def test_create_import_work_order_success(base_url, headers):
     assert work_order_data["ContainerNo"] == import_context["container_no"]
     assert work_order_data["BookingNumber"] == import_context["booking_no"]
 
-    print("\n✅ Import Work Order created successfully.")    
-
-
+    print("\n✅ Import Work Order created successfully.")

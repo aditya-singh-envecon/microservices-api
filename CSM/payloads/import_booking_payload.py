@@ -128,7 +128,6 @@ def get_import_booking_details_payload(
     }
 
 
-
 def get_import_booking_cargo_payload(bkid: int, context: dict):
     return {
         "ID": 0,
@@ -154,7 +153,6 @@ def get_import_booking_cargo_payload(bkid: int, context: dict):
         "CrtByTokenID": 101,
         "StatusID": 0
     }
-
 
 
 def get_import_booking_container_payload(bkid: int):
@@ -222,11 +220,11 @@ def get_import_cargo_container_mapping_payload(
     }
 
 
-
 def get_import_booking_boe_payload(
     *,
     bkid: int,
     cargo_id: int,
+    bk_unique_no: str,
     cargo_unique_no: str,
     line_no: str
 ):
@@ -237,7 +235,8 @@ def get_import_booking_boe_payload(
     return {
         "ParentBoEDto": {
             "ID": cargo_id,
-            "UniqueNo": cargo_unique_no,
+            "UniqueNo": cargo_unique_no,      # 🔑 Cargo Unique No
+            "BkUniqueNo": bk_unique_no,
             "BkID": bkid,
             "LineNumber": line_no,
 
@@ -281,7 +280,6 @@ def get_import_booking_boe_payload(
     }
 
 
-
 def get_import_booking_ooc_payload(cargo_id: int, be_date: str):
     """
     Payload for SaveImportBookingCargoOOC
@@ -298,8 +296,6 @@ def get_import_booking_ooc_payload(cargo_id: int, be_date: str):
     }
 
 
-
-
 def get_import_work_order_payload(import_context: dict):
     """
     Build Work Order payload for Import Booking
@@ -309,7 +305,8 @@ def get_import_work_order_payload(import_context: dict):
         "COID": import_context["bkid"],                     # Booking ID
         "BookingNumber": import_context["booking_no"],      # Booking Number
         "ContainerNo": import_context["container_no"],      # Container No
-        "COUniqueNo": import_context["co_unique_no"],       # Container Unique No
+        # Container Unique No
+        "COUniqueNo": import_context["co_unique_no"],
 
         "ContainerCycleID": 37,                              # IMPORT
         "ContainerOperator": "MAERSK INDIA PVT LTD",
@@ -317,9 +314,11 @@ def get_import_work_order_payload(import_context: dict):
 
         "BookingType": "Import Bookings",
 
-        "ReferenceNumber": import_context["context"]["ligm_no"],  # Safe reference
+        # Safe reference
+        "ReferenceNumber": import_context["context"]["ligm_no"],
         "JCOID": None,
-        "JODID": 1068,                                       # Static (working value)
+        # Static (working value)
+        "JODID": 1068,
         "FlowTypeID": 119,                                  # Import flow
 
         "BLNumber": import_context["context"]["bl_no"],
