@@ -1,0 +1,27 @@
+# Virtual environments
+venv/
+.env/
+ENV/
+.env.bak/
+.env.old/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Pytest
+.pytest_cache/
+.coverage
+htmlcov/
+
+# VS Code
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

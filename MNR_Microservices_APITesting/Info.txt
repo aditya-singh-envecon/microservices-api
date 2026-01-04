@@ -1,0 +1,10 @@
+#To Run the pytest file
+
+pytest [filename].py -s -v
+
+#To run a single test from pytest file
+
+pytest -s -v test_api.py::test_create_estimate [-s is used to log the print cmds in the terminal]
+
+
+
